@@ -1,0 +1,1 @@
+Electron client included for local testing. Run `cd electron-client && npm install && npm start`

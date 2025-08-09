@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Tiger Live</title></head>
+<body style="font-family:system-ui,Arial;padding:20px;">
+  <h1>Tiger — Live Web Client</h1>
+  <label>Device ID: <input id="deviceId" value="device-123"/></label><button id="pairBtn">Pair</button>
+  <h3>Send Notification</h3>
+  <input id="ntTitle" placeholder="Title"/><br/>
+  <textarea id="ntBody" placeholder="Body"></textarea><br/>
+  <button id="sendNt">Send (server emit)</button>
+  <h3>Upload File</h3>
+  <input type="file" id="file"/><button id="uploadFile">Upload</button>
+  <script>
+    const API = '/api';
+    document.getElementById('pairBtn').onclick = async () => {
+      const deviceId = document.getElementById('deviceId').value;
+      await fetch(API + '/pair', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({deviceId, name: 'Sandip Device'})});
+      alert('Paired ' + deviceId);
+    };
+    document.getElementById('sendNt').onclick = async () => {
+      const deviceId = document.getElementById('deviceId').value;
+      const title = document.getElementById('ntTitle').value;
+      const body = document.getElementById('ntBody').value;
+      // POST to server to relay (server will emit via socket.io if implemented)
+      await fetch(API + '/emit-notification', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ deviceId, title, body })}).catch(()=>alert('Server-side /emit-notification not required for prototype'));
+      alert('Request sent (prototype)');
+    };
+    document.getElementById('uploadFile').onclick = async () => {
+      const fileEl = document.getElementById('file');
+      if (!fileEl.files.length) return alert('Choose file');
+      const fd = new FormData(); fd.append('file', fileEl.files[0]);
+      const deviceId = document.getElementById('deviceId').value;
+      const res = await fetch('/api/upload?deviceId=' + encodeURIComponent(deviceId), { method:'POST', body: fd});
+      const j = await res.json();
+      alert('Uploaded: ' + JSON.stringify(j));
+    };
+  </script>
+</body>
+</html>

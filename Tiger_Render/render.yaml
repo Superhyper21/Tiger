@@ -1,0 +1,8 @@
+
+services:
+  - type: web
+    name: tiger-single-app
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
